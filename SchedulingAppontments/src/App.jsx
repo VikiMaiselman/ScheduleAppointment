@@ -1,14 +1,25 @@
-import { useState } from 'react'
+import React from "react";
+import AppRouter from "./components/AppRouter";
+import "./App.css";
 
-import './App.css'
+// import AuthProvider from "./contexts/Auth.context";
+// import CustomThemeProvider from "./contexts/CustomTheme.context";
 
-function App() {
-
+export default React.memo(function App() {
   return (
-    <>
-      
-    </>
-  )
-}
+    <MainApp />
+    // <AuthProvider>
+    // {/* <CustomThemeProvider> */}
+    // <MainApp />
+    // </CustomThemeProvider>
+    // </AuthProvider>
+  );
+});
 
-export default App
+function MainApp() {
+  return (
+    <div>
+      <AppRouter />
+    </div>
+  );
+}

@@ -2,6 +2,8 @@ import React from "react";
 import AppRouter from "./components/AppRouter";
 import "./App.css";
 
+import BookingPage from "./pages/BookingPage";
+
 // import AuthProvider from "./contexts/Auth.context";
 // import CustomThemeProvider from "./contexts/CustomTheme.context";
 
@@ -20,6 +22,7 @@ function MainApp() {
   return (
     <div>
       <AppRouter />
+      <BookingPage/>
     </div>
   );
 }

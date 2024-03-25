@@ -37,7 +37,7 @@ async function createNewProcedure(name, price, slotsTakes) {
 async function editProcedure(procedureId, editedProcedure) {
   try {
     await Procedure.findByIdAndUpdate(procedureId, {
-      ...editProcedure,
+      ...editedProcedure,
     }); // not sure this is the right way of updating
   } catch (error) {
     throw error;
@@ -46,7 +46,7 @@ async function editProcedure(procedureId, editedProcedure) {
 // delete procedure
 async function deleteProcedure(procedureId) {
   try {
-    await Procedure.findByIdAndDelete(procedureId); // not sure this is the right way of updating
+    await Procedure.findByIdAndDelete(procedureId);
   } catch (error) {
     throw error;
   }

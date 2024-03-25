@@ -1,33 +1,43 @@
 import express from "express";
 import { getAllProcedures } from "../models/procedure.js";
 import { createReservation, deleteReservation } from "../models/reservation.js";
+import { getAvailableSlots } from "../models/workday.js";
 
 const router = express.Router();
 
 router.get("/procedures", (req, res) => {
   try {
-    getAllProcedures();
+    const allProcedures = getAllProcedures();
   } catch (error) {
     throw error;
   }
 });
 
 router.post("/create-reservation", (req, res) => {
+  const { workdayId, procedureId, startTime } = req.body;
   try {
-    createReservation();
+    createReservation(workdayId, procedureId, startTime);
   } catch (error) {
     throw error;
   }
 });
 
-router.delete("/delete-reservation:", (req, res) => {
+// router.delete("/delete-reservation:", (req, res) => {
+//   try {
+//     deleteReservation();
+//   } catch (error) {
+//     throw error;
+//   }
+// });
+
+// router.get("/workday", (req, res) => {});
+
+router.get("/workday-slots/:procedureId", (req, res) => {
+  const { workdayDate, workdayId } = req.query; //chose one approach, date vs id
+  const procedureId = req.params.procedureId;
   try {
-    deleteReservation();
+    const availableTimeSlots = getAvailableSlots(workdayId, workdayDate, procedureId);
   } catch (error) {
     throw error;
   }
-});
-
-router.get("/workday", (req, res) => {});
-
-router.get("/workday-slots", (req, res) => {}); // ?
+}); // ?

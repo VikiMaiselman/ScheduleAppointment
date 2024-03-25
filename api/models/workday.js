@@ -1,10 +1,12 @@
 import mongoose from "mongoose";
 import { ReservationSchema } from "./reservation.js";
+import { Procedure } from "./procedure.js";
 
 const WorkdaySchema = new mongoose.Schema({
   date: {
     type: Date,
     required: true,
+    unique: true,
   },
   startTime: {
     type: Date,
@@ -14,10 +16,14 @@ const WorkdaySchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  totalWorkingHours: {
+    type: Number,
+    required: true,
+  },
   availableSlots: {
     type: [Number],
     required: true,
-    default: Array.from({ length: 48 }, () => 1), // Default value with all ones
+    default: Array.from({ length: +process.env.TIME_SLOT_IN_MINUTES * totalWorkingHours }, () => 1), // Default value with all ones
     validate: {
       validator: function (value) {
         return value.every((slot) => slot === 0 || slot === 1);
@@ -31,17 +37,20 @@ const WorkdaySchema = new mongoose.Schema({
 const Workday = mongoose.model("Workday", WorkdaySchema);
 
 async function createWorkday(date, startTime, endTime) {
+  const totalHours = Math.floor((endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60));
+
   const newWorkday = new Workday({
     date,
     startTime,
     endTime,
+    totalWorkingHours: totalHours,
   });
 
   try {
     await newWorkday.save();
     console.log(newWorkday);
-  } catch (err) {
-    throw err;
+  } catch (error) {
+    throw error;
   }
 }
 
@@ -50,18 +59,32 @@ async function createWorkday(date, startTime, endTime) {
 // get-workday-info (returns startTime and endTime)
 
 // id vs date ?
-async function getAvailableSlots(workdayId, procedure) {
-  // get workday
-  // get procedure.slotsTakes
+async function getAvailableSlots(workdayId, workdayDate, procedureId) {
+  // get workday (by id vs by date as is unique)
+  let workday, procedureSlots;
+  try {
+    workday = Workday.findById(workdayId);
+    // workday = Workday.findOne({ date: workdayDate });
+  } catch (error) {
+    throw error;
+  }
+
+  try {
+    // get procedure.slotsTakes
+    procedureSlots = Procedure.findById(procedureId, "slotsTakes");
+  } catch (error) {
+    throw error;
+  }
+
   // loop through slots and find all available
-  // const availableTimeSlots = workday.availableSlots.map((timeRepr, idx) => {
-  //    for (let i = 0; i < procedure.slotsTakes; ++i) {
-  //          if (!timeRepr) return;
-  //      }
-  //      return new Date(workday.startTime + idx * 15 min);
-  //   })
-  // return availableTimeSlot
+  const availableTimeSlots = workday.availableSlots.map((timeRepr, idx, slots) => {
+    for (let i = 0; i < procedureSlots && idx + i < slots.length; ++i) {
+      if (!slots[i + idx]) return;
+    }
+    return new Date(workday.startTime + idx * +process.env.TIME_SLOT_IN_MINUTES * +process.env.MILLISECONDS_IN_MINUTE);
+  });
+  return availableTimeSlots;
 }
 
 // module.exports = Workday;
-export { Workday, createWorkday };
+export { Workday, createWorkday, getAvailableSlots };

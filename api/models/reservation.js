@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { Workday } from "./workday";
+import { Procedure } from "./procedure";
 
 const ReservationSchema = new mongoose.Schema({
   userId: {
@@ -28,15 +29,28 @@ async function createReservation(workdayId, procedureId, startTime) {
   // create new reservation
   const newReservation = new Reservation({
     user: req.user,
-    procedure: procedureId,
+    procedureId: procedureId,
     workdayId: workdayId,
     startTime: startTime,
   });
 
   // insert to the workday reservations
   try {
-    workday = await Workday.findOneAndUpdate({ _id: workdayId }); // push the reservation to the reservations []
+    workday = await Workday.findByIdAndUpdate(workdayId, { $push: { reservations: newReservation } }, { new: true }); // push the reservation to the reservations []
     // update the workday available slots
+
+    const procedure = await Procedure.findById(procedureId);
+    const workdayStartTime = workday.startTime.getTime();
+    const reservationStartTime = startTime.getTime();
+    const slotsNumber = Math.floor(
+      (reservationStartTime.getTime() - workdayStartTime.getTime()) / (1000 * 60 * +process.env.TIME_SLOT_IN_MINUTES)
+    );
+
+    for (let i = 0; i < procedure.takesSlots; ++i) {
+      workday.availableSlots[slotsNumber] = 0;
+    }
+    await workday.save();
+    // those 2 ops should be in one session!
   } catch (error) {
     throw error;
   }

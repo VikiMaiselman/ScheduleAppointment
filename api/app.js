@@ -43,7 +43,11 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-initializeDatabase();
+try {
+  initializeDatabase();
+} catch (err) {
+  throw err;
+}
 
 // Routers
 

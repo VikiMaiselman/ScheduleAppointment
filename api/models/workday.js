@@ -1,4 +1,34 @@
-import { Workday } from "../util/database.js";
+import mongoose from "mongoose";
+import { ReservationSchema } from "./reservation.js";
+
+const WorkdaySchema = new mongoose.Schema({
+  date: {
+    type: Date,
+    required: true,
+  },
+  startTime: {
+    type: Date,
+    required: true,
+  },
+  endTime: {
+    type: Date,
+    required: true,
+  },
+  availableSlots: {
+    type: [Number],
+    required: true,
+    default: Array.from({ length: 48 }, () => 1), // Default value with all ones
+    validate: {
+      validator: function (value) {
+        return value.every((slot) => slot === 0 || slot === 1);
+      },
+      message: "Available time slots must contain only 0s and 1s.",
+    },
+  },
+  reservations: [ReservationSchema],
+});
+
+const Workday = mongoose.model("Workday", WorkdaySchema);
 
 async function createWorkday(date, startTime, endTime) {
   const newWorkday = new Workday({
@@ -32,3 +62,6 @@ async function getAvailableSlots(workdayId, procedure) {
   //   })
   // return availableTimeSlot
 }
+
+// module.exports = Workday;
+export { Workday, createWorkday };

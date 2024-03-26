@@ -1,25 +1,38 @@
 import React from "react";
-import axios from "axios";
+import { Link } from "react-router-dom";
 
-import { url, headers } from "../util/configs";
+import useProcedures from "../hooks/procedures";
 
 export default function Procedures() {
-  const [procedures, setProcedures] = React.useState();
+  const [procedures, getProcedures, createProcedure] = useProcedures();
 
   React.useEffect(() => {
-    const fetchData = async () => {
-      const response = await axios.get(`${url}/procedures`, { withCredentials: true }, headers);
-      const procedures = response.data;
-      setProcedures(procedures);
-      console.log(procedures);
-    };
-    fetchData();
+    getProcedures();
   }, []);
+
+  const handleClick = (e) => [createProcedure("test2", 150, 3)];
 
   return (
     <>
       <h1>Procedures</h1>
-      <ul>{procedures && React.Children.toArray(procedures.map((p) => <li>{p.name}</li>))}</ul>
+      <ul>
+        {procedures &&
+          React.Children.toArray(
+            procedures.map((p) => (
+              <li>
+                <Link
+                  to={`/create-reservation/${p._id}`}
+                  state={{ name: p.name, duration: p.slotsTakes * 15, price: p.price }}
+                >
+                  <h1>{p.name}</h1>
+                  <p>{p.price}₪</p>
+                  <p>{p.slotsTakes * 15} min</p>
+                </Link>
+              </li>
+            ))
+          )}
+      </ul>
+      <button onClick={handleClick}>Create Procedure</button>
     </>
   );
 }

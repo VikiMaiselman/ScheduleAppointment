@@ -23,7 +23,7 @@ function MainApp() {
   return (
     <div>
       <AppRouter />
-      <Procedures />
+      {/* <Procedures /> */}
     </div>
   );
 }

@@ -7,15 +7,18 @@ const router = express.Router();
 router.get("/procedures", (req, res) => {
   try {
     const allProcedures = getAllProcedures();
+    return res.status(200).json(allProcedures);
   } catch (error) {
     throw error;
   }
 });
 
-router.post("/procedure", (req, res) => {
+router.post("/procedures", (req, res) => {
+  console.log(req.body);
   const { name, price, slotsTakes } = req.body;
   try {
     createNewProcedure(name, price, slotsTakes);
+    return res.status(200).json("Successfully created new procedure!");
   } catch (error) {
     throw error;
   }

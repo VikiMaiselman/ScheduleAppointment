@@ -33,11 +33,13 @@ router.post("/create-reservation", (req, res) => {
 
 // router.get("/workday", (req, res) => {});
 
-router.get("/workday-slots/:procedureId", (req, res) => {
-  const { workdayDate, workdayId } = req.query; //chose one approach, date vs id
+router.get("/workday-slots/:procedureId", async (req, res) => {
+  const workdayDate = new Date(+req.query.workdayDate); //chose one approach, date vs id
+  //   console.log(workdayDate);
   const procedureId = req.params.procedureId;
   try {
-    const availableTimeSlots = getAvailableSlots(workdayId, workdayDate, procedureId);
+    const availableTimeSlots = await getAvailableSlots(workdayDate, procedureId);
+    return res.status(200).json(availableTimeSlots);
   } catch (error) {
     throw error;
   }

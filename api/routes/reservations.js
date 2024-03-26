@@ -5,9 +5,10 @@ import { getAvailableSlots } from "../models/workday.js";
 
 const router = express.Router();
 
-router.get("/procedures", (req, res) => {
+router.get("/procedures", async (req, res) => {
   try {
-    const allProcedures = getAllProcedures();
+    const allProcedures = await getAllProcedures();
+    return res.status(201).json(allProcedures);
   } catch (error) {
     throw error;
   }
@@ -41,3 +42,5 @@ router.get("/workday-slots/:procedureId", (req, res) => {
     throw error;
   }
 }); // ?
+
+export { router as reservationRouter };

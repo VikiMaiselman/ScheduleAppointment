@@ -53,3 +53,5 @@ router.post("/workday", (req, res) => {
 // router.patch("/workday/:workdayId", (req, res) => {});
 
 // router.delete("/workday/:workdayId", (req, res) => {});
+
+export { router as adminRouter };

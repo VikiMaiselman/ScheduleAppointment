@@ -6,7 +6,10 @@ import cors from "cors";
 
 import session from "express-session";
 import passport from "passport";
-import { initializeDatabase } from "./util/database";
+
+import { db, initializeDatabase } from "./util/database.js";
+import { adminRouter } from "./routes/admin.js";
+import { reservationRouter } from "./routes/reservations.js";
 
 const app = express();
 const port = 3009;
@@ -43,13 +46,17 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-try {
-  initializeDatabase();
-} catch (err) {
-  throw err;
+if (!db) {
+  try {
+    initializeDatabase();
+  } catch (err) {
+    throw err;
+  }
 }
 
 // Routers
+app.use("/admin", adminRouter);
+app.use(reservationRouter);
 
 // Listening to incoming requests
 app.listen(port, () => console.log(`Server's up. Listening on port ${port}`));

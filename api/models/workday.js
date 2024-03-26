@@ -18,12 +18,15 @@ const WorkdaySchema = new mongoose.Schema({
   },
   totalWorkingHours: {
     type: Number,
+    // default: 8,
     required: true,
   },
   availableSlots: {
     type: [Number],
     required: true,
-    default: Array.from({ length: +process.env.TIME_SLOT_IN_MINUTES * totalWorkingHours }, () => 1), // Default value with all ones
+    default: function () {
+      Array.from({ length: +process.env.TIME_SLOT_IN_MINUTES * this.totalWorkingHours }, () => 1);
+    }, // Default value with all ones
     validate: {
       validator: function (value) {
         return value.every((slot) => slot === 0 || slot === 1);

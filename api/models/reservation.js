@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
-import { Workday } from "./workday";
-import { Procedure } from "./procedure";
+import mongoose, { Schema } from "mongoose";
+import { Workday } from "./workday.js";
+import { Procedure } from "./procedure.js";
 
 const ReservationSchema = new mongoose.Schema({
   userId: {
